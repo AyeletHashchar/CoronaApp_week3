@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CoronaApp.Dal.Migrations
 {
     [DbContext(typeof(CoronaContext))]
-    [Migration("20220713101633_Initial")]
-    partial class Initial
+    [Migration("20220713140749_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -38,7 +38,7 @@ namespace CoronaApp.Dal.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("PatientId")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(9)");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
@@ -53,7 +53,11 @@ namespace CoronaApp.Dal.Migrations
             modelBuilder.Entity("CoronaApp.Dal.Models.Patient", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(9)
+                        .HasColumnType("nvarchar(9)");
+
+                    b.Property<int>("Age")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");

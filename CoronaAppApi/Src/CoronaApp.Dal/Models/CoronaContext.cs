@@ -11,7 +11,7 @@ namespace CoronaApp.Dal.Models
         public DbSet<Location> Locations { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(@"server=DESKTOP-A8BTK9B\SQL2019;Database=CoronaDB2;Trusted_Connection=True;");
+            optionsBuilder.UseSqlServer(@"server=DESKTOP-A8BTK9B\SQL2019;Database=CoronaDB3;Trusted_Connection=True;");
         }
     }
 }

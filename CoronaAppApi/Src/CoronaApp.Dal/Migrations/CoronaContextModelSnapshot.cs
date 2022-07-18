@@ -36,7 +36,7 @@ namespace CoronaApp.Dal.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("PatientId")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(9)");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
@@ -51,7 +51,8 @@ namespace CoronaApp.Dal.Migrations
             modelBuilder.Entity("CoronaApp.Dal.Models.Patient", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(9)
+                        .HasColumnType("nvarchar(9)");
 
                     b.Property<int>("Age")
                         .HasColumnType("int");

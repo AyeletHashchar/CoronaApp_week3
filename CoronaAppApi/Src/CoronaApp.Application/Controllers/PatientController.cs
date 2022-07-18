@@ -22,10 +22,10 @@ namespace CoronaApp.Api.Controllers
             return service.Get(id);
         }
 
-        [HttpGet("age")]
-        public ICollection<Patient> GetByAge(int age)
+        [HttpGet]
+        public ICollection<Patient> GetByAge([FromBody] Services.Models.LocationSearch locationSearch)
         {
-            return service.GetByAge(age);
+            return service.GetByAge(locationSearch.Age);
         }
 
         [HttpPost]
