@@ -4,14 +4,16 @@ using CoronaApp.Dal.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CoronaApp.Dal.Migrations
 {
     [DbContext(typeof(CoronaContext))]
-    partial class CoronaContextModelSnapshot : ModelSnapshot
+    [Migration("20220720092421_Add Model Bindigs")]
+    partial class AddModelBindigs
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

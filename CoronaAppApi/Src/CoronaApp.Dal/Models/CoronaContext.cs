@@ -7,6 +7,14 @@ namespace CoronaApp.Dal.Models
 {
     public class CoronaContext : DbContext
     {
+        public CoronaContext()
+        {
+
+        }
+        public CoronaContext(DbContextOptions<CoronaContext> options):base(options)
+        {
+
+        }
         public DbSet<Patient> Patients { get; set; }
         public DbSet<Location> Locations { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

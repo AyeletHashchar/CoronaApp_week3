@@ -1,38 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using CoronaApp.Dal.Models;
-using CoronaApp.Services.Functions;
+using CoronaApp.Services;
 using Microsoft.AspNetCore.Mvc;
 
 
-namespace CoronaApp.Api.Controllers
+namespace CoronaApp.Api.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class PatientController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class PatientController : ControllerBase
+
+    IPatientRepository _service;
+    public PatientController(IPatientRepository service)
     {
-
-        PatientFunc service = new PatientFunc();
-
-        [HttpGet("id")]
-        public Patient Get(string id)
-        {
-            return service.Get(id);
-        }
-
-        [HttpGet]
-        public ICollection<Patient> GetByAge([FromBody] Services.Models.LocationSearch locationSearch)
-        {
-            return service.GetByAge(locationSearch.Age);
-        }
-
-        [HttpPost]
-        public void Save([FromBody]Patient patient)
-        {
-            service.Save(patient);
-        }
-
+        _service = service;
     }
+
+    [HttpGet("id")]
+    public Patient Get(string id)
+    {
+        return _service.Get(id);
+    }
+
+    [HttpGet]
+    public ICollection<Patient> GetByAge([FromBody] Services.Models.LocationSearch locationSearch)
+    {
+        return _service.GetByAge(locationSearch.Age);
+    }
+
+    [HttpPost]
+    public void Save([FromBody]Patient patient)
+    {
+        _service.Save(patient);
+    }
+
 }

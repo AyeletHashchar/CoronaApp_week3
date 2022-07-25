@@ -40,22 +40,25 @@ namespace CoronaApp.Services.Functions
         {
             using (var db = new CoronaContext())
             {
-                if (location == null)
-                    return;
-                Patient Exitpatient = db.Patients.FirstOrDefault(p => p.Id == location.Patient.Id);
-                if (Exitpatient != null)
-                {
-                    if (Exitpatient.Locations == null)
+                    if (location == null)
+                        return;
+                    if(location.Patient==null || location.Patient.Id == null)
+                        throw new InvalidOperationException();
+
+                    Patient Exitpatient = db.Patients.FirstOrDefault(p => p.Id == location.Patient.Id);
+                    if (Exitpatient != null)
                     {
-                        Exitpatient.Locations = new List<Location>();
+                        if (Exitpatient.Locations == null)
+                        {
+                            Exitpatient.Locations = new List<Location>();
+                        }
+                        Exitpatient.Locations.Add(location);
                     }
-                    Exitpatient.Locations.Add(location);
-                }
-                else
-                {
-                    db.Locations.Add(location);
-                }
-                db.SaveChanges();
+                    else
+                    {
+                        db.Locations.Add(location);
+                    }
+                    db.SaveChanges();
             }
         }
     }
