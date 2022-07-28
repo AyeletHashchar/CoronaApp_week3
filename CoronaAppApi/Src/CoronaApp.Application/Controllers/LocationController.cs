@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using CoronaApp.Dal.Models;
 using CoronaApp.Services;
-using CoronaApp.Services.Functions;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -21,32 +20,39 @@ public class LocationController : Controller
     }
 
     [HttpGet]
-    public ICollection<Location> GetAll()
+    public async Task<ICollection<Location>> GetAllAsync()
     {
-           return _service.GetAll();
+           return await _service.GetAllAsync();
     }
 
     [HttpGet("patientId")]
-    public ICollection<Location> GetByPatientId(string patientId)
+    public async Task<ICollection<Location>> GetByPatientIdAsync(string patientId)
     {
-           return _service.GetByPatientId(patientId);
+           return await _service.GetByPatientIdAsync(patientId);
     }
 
     [HttpGet("city")]
-    public ICollection<Location> GetByCity(string city)
+    public async Task<ICollection<Location>> GetByCityAsync(string city)
     {
-           return _service.GetByCity(city);
+           return await _service.GetByCityAsync(city);
     }
 
     [HttpGet("range")]
-    public ICollection<Location> GetByDatesRange([FromBody] Services.Models.LocationSearch locationSearch)
+    public async Task<ICollection<Location>> GetByDatesRangeAsync([FromBody] Services.Models.LocationSearch locationSearch)
     {
-           return _service.GetByDatesRange(locationSearch);
+           return await _service.GetByDatesRangeAsync(locationSearch);
     }
 
-    [HttpPost]
-    public void Post([FromBody] Location location)
+    [HttpGet("age")]
+    public async Task<ICollection<Location>> GetByAgeAsync([FromBody] Services.Models.LocationSearch locationSearch)
     {
-           _service.Post(location);
+        return await _service.GetByAgeAsync((int)locationSearch?.Age);
+    }
+
+
+    [HttpPost]
+    public async Task PostAsync([FromBody] Location location)
+    {
+        await _service.PostAsync(location);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,19 +8,24 @@ namespace CoronaApp.Dal.Models
 {
     public class CoronaContext : DbContext
     {
-        public CoronaContext()
+        private readonly IConfiguration _configuration;
+        public CoronaContext(IConfiguration config)
         {
-
+            _configuration = config;
         }
-        public CoronaContext(DbContextOptions<CoronaContext> options):base(options)
+
+        public CoronaContext(DbContextOptions<CoronaContext> options, IConfiguration config):base(options)
         {
+            _configuration = config;
 
         }
         public DbSet<Patient> Patients { get; set; }
         public DbSet<Location> Locations { get; set; }
+        public DbSet<User> Users { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(@"server=DESKTOP-A8BTK9B\SQL2019;Database=CoronaDB3;Trusted_Connection=True;");
+            optionsBuilder.UseSqlServer(_configuration["ConnectionStrings:myDatabase"]);
         }
     }
 }

@@ -1,64 +1,86 @@
 ﻿using CoronaApp.Dal.Models;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace CoronaApp.Services.Functions
 {
     public class LocationFunc : ILocationRepository
     {
-        public ICollection<Location> GetAll()
+        private readonly IConfiguration _configuration;
+
+        public LocationFunc(IConfiguration configuration)
         {
-            using (var db = new CoronaContext())
+            _configuration = configuration;
+        }
+
+        public async Task<ICollection<Location>> GetAllAsync()
+        {
+            await using (var db = new CoronaContext(_configuration))
             {
                 return db.Locations.ToList();
             }
         }
-        public ICollection<Location> GetByPatientId(string patientId)
+        public async Task<ICollection<Location>> GetByPatientIdAsync(string patientId)
         {
-            using (var db = new CoronaContext())
+            await using (var db = new CoronaContext(_configuration))
             {
                 return db.Locations.Where(l => l.Patient.Id == patientId).ToList();
             }
         }
-        public ICollection<Location> GetByCity(string city)
+        public async Task<ICollection<Location>> GetByCityAsync(string city)
         {
-            using (var db = new CoronaContext())
+            await using (var db = new CoronaContext(_configuration))
             {
                 return db.Locations.Where(l => l.City.Contains(city)).ToList();
             }
         }
-        public ICollection<Location> GetByDatesRange(Services.Models.LocationSearch locationSearch)
+        public async Task<ICollection<Location>> GetByDatesRangeAsync(Models.LocationSearch locationSearch)
         {
-            using (var db = new CoronaContext())
+            await using (var db = new CoronaContext(_configuration))
             {
-                return db.Locations.Where(l => l.StartDate >= locationSearch.StartDate && l.EndDate <= locationSearch.EndDate).ToList();
+                return db.Locations.Where(l => 
+                        l.StartDate >= (locationSearch == null || locationSearch.StartDate == null ? l.StartDate : locationSearch.StartDate) && 
+                        l.EndDate <= (locationSearch == null || locationSearch.EndDate == null ? l.EndDate : locationSearch.EndDate)
+                    ).ToList();
             }
         }
-        public void Post(Location location)
+        public async Task<ICollection<Location>> GetByAgeAsync(int age)
         {
-            using (var db = new CoronaContext())
+            await using (CoronaContext db = new CoronaContext(_configuration))
             {
-                    if (location == null)
-                        return;
-                    if(location.Patient==null || location.Patient.Id == null)
-                        throw new InvalidOperationException();
+                return db.Locations.Where(l => l.Patient.Age == age).ToList();
+            }
+        }
+        public async Task<ICollection<Location>> GetByLocationSearchAsync(Models.LocationSearch locationSearch)
+        {
+            ICollection<Location> l1 = await GetByDatesRangeAsync(locationSearch);
+            ICollection<Location> l2 = await GetByAgeAsync((int)locationSearch?.Age);
+            return l1.Intersect(l2).ToList(); 
+        }
+        public async Task PostAsync(Location location)
+        {
+            if (location == null || location.Patient == null || location.Patient.Id == null)
+                throw new InvalidOperationException();
 
-                    Patient Exitpatient = db.Patients.FirstOrDefault(p => p.Id == location.Patient.Id);
-                    if (Exitpatient != null)
-                    {
-                        if (Exitpatient.Locations == null)
-                        {
-                            Exitpatient.Locations = new List<Location>();
-                        }
-                        Exitpatient.Locations.Add(location);
-                    }
-                    else
-                    {
-                        db.Locations.Add(location);
-                    }
-                    db.SaveChanges();
+            await using (var db = new CoronaContext(_configuration))
+            {
+                Patient Exitpatient = db.Patients.FirstOrDefault(p => p.Id == location.Patient.Id);
+                if (Exitpatient == null)
+                {
+                    await db.Locations.AddAsync(location); //If the patient does'nt exist, he'll be created automatically by this line.
+                }
+                else
+                {
+                    if (Exitpatient.Locations == null)
+                        Exitpatient.Locations = new List<Location>();
+                    Exitpatient.Locations.Add(location);
+                }
+
+                await db.SaveChangesAsync();
             }
         }
     }

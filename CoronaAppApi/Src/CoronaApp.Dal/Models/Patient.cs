@@ -12,6 +12,6 @@ namespace CoronaApp.Dal.Models
         public string Id { get; set; }
         public string Name { get; set; }
         public int Age { get; set; }
-        public ICollection<Location> Locations { get; set; }
+        public ICollection<Location>? Locations { get; set; }
     }
 }

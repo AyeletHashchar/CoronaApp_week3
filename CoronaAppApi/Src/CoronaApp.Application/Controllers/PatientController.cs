@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using CoronaApp.Dal.Models;
 using CoronaApp.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 
 namespace CoronaApp.Api.Controllers;
-
+[Authorize]
 [Route("api/[controller]")]
 [ApiController]
 public class PatientController : ControllerBase
@@ -18,21 +20,23 @@ public class PatientController : ControllerBase
     }
 
     [HttpGet("id")]
-    public Patient Get(string id)
+    public async Task<Patient> GetAsync()
     {
-        return _service.Get(id);
-    }
-
-    [HttpGet]
-    public ICollection<Patient> GetByAge([FromBody] Services.Models.LocationSearch locationSearch)
-    {
-        return _service.GetByAge(locationSearch.Age);
+        return await _service.GetAsync(User);
     }
 
     [HttpPost]
-    public void Save([FromBody]Patient patient)
+    public async Task<bool> SaveAsync([FromBody]Patient patient)
     {
-        _service.Save(patient);
+        try
+        {
+            await _service.SaveAsync(patient);
+            return true;
+        }
+        catch
+        {
+            throw new("Server Err: couldn't save data.");
+        }
     }
 
 }

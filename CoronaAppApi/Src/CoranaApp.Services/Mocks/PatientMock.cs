@@ -1,25 +1,22 @@
 ﻿using CoronaApp.Dal.Models;
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace CoronaApp.Services.Mocks
 {
     public class PatientMock : IPatientRepository
     {
-        public Patient Get(string id)
+        public Task<Patient> GetAsync(ClaimsPrincipal user)
         {
             return null;
         }
 
-        public ICollection<Patient> GetByAge(int age)
+        public Task SaveAsync(Patient patient)
         {
             return null;
-        }
-
-        public void Save(Patient patient)
-        {
-            return;
         }
     }
 }
