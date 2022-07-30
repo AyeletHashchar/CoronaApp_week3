@@ -27,8 +27,8 @@ public class UserController : Controller
     [HttpPost("token")]
     public async Task<IActionResult> CreateToken(string userName, string password)
     {
-        var token = await _service.CreateToken(userName, password);
-        return token != null ? Ok(token) :
+        string token = await _service.CreateToken(userName, password);
+        return token != null ? Json(token) :
             BadRequest(new { message = "Username or password is incorrect" });
     }
 
@@ -36,6 +36,8 @@ public class UserController : Controller
     public async Task<IActionResult> GetUserName()
     {
         string userName = await _service.getUserName(User);
+        return Ok(User.Claims.FirstOrDefault(x => x.Type.ToString().Equals("UserName", StringComparison.InvariantCultureIgnoreCase)).Value);
+
         return userName != null ? Ok(userName) :
             BadRequest(new { message = "Could not get userName from given token." });
     }

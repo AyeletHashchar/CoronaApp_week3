@@ -1,6 +1,8 @@
-﻿using CoronaApp.Services.Models;
+﻿using CoronaApp.Dal.Dtos;
+using CoronaApp.Services.Models;
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -28,7 +30,7 @@ namespace CoronaApp.Services.Mocks
             return null;
         }
 
-        public Task<ICollection<Dal.Models.Location>> GetByCityAsync(string city)
+        public Task<ICollection<Dal.Models.Location>> GetByCityAsync(string? city)
         {
             return null;
         }
@@ -48,14 +50,9 @@ namespace CoronaApp.Services.Mocks
             return null;
         }
 
-        public ICollection<Dal.Models.Location> GetByPatientId(string patientId)
+        public Task<ICollection<Dal.Models.Location>> GetByPatientIdAsync(ClaimsPrincipal user)
         {
-            return null;
-        }
-
-        public Task<ICollection<Dal.Models.Location>> GetByPatientIdAsync(string patientId)
-        {
-            return null;
+            throw new NotImplementedException();
         }
 
         public void Post(Dal.Models.Location location)
@@ -63,7 +60,7 @@ namespace CoronaApp.Services.Mocks
             return;
         }
 
-        public Task PostAsync(Dal.Models.Location location)
+        public Task PostAsync(LocationDto location, ClaimsPrincipal user)
         {
             throw new NotImplementedException();
         }

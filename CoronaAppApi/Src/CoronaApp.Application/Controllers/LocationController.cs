@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CoronaApp.Dal.Dtos;
 using CoronaApp.Dal.Models;
 using CoronaApp.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -25,14 +27,15 @@ public class LocationController : Controller
            return await _service.GetAllAsync();
     }
 
+    [Authorize]
     [HttpGet("patientId")]
-    public async Task<ICollection<Location>> GetByPatientIdAsync(string patientId)
+    public async Task<ICollection<Location>> GetByPatientIdAsync()
     {
-           return await _service.GetByPatientIdAsync(patientId);
+           return await _service.GetByPatientIdAsync(User);
     }
 
     [HttpGet("city")]
-    public async Task<ICollection<Location>> GetByCityAsync(string city)
+    public async Task<ICollection<Location>> GetByCityAsync(string? city)
     {
            return await _service.GetByCityAsync(city);
     }
@@ -49,10 +52,10 @@ public class LocationController : Controller
         return await _service.GetByAgeAsync((int)locationSearch?.Age);
     }
 
-
+    [Authorize]
     [HttpPost]
-    public async Task PostAsync([FromBody] Location location)
+    public async Task PostAsync([FromBody] LocationDto location)
     {
-        await _service.PostAsync(location);
+        await _service.PostAsync(location, User);
     }
 }

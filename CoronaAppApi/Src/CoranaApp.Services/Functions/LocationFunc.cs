@@ -1,8 +1,10 @@
-﻿using CoronaApp.Dal.Models;
+﻿using CoronaApp.Dal.Dtos;
+using CoronaApp.Dal.Models;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -24,18 +26,23 @@ namespace CoronaApp.Services.Functions
                 return db.Locations.ToList();
             }
         }
-        public async Task<ICollection<Location>> GetByPatientIdAsync(string patientId)
+        public async Task<ICollection<Location>> GetByPatientIdAsync(ClaimsPrincipal user)
         {
+            string id = user.Claims.FirstOrDefault(x => x.Type.ToString().Equals("UserId", StringComparison.InvariantCultureIgnoreCase)).Value;
+
             await using (var db = new CoronaContext(_configuration))
             {
-                return db.Locations.Where(l => l.Patient.Id == patientId).ToList();
+                return db.Locations.Where(l => l.Patient.Id == id).ToList();
             }
         }
-        public async Task<ICollection<Location>> GetByCityAsync(string city)
+        public async Task<ICollection<Location>> GetByCityAsync(string? city)
         {
             await using (var db = new CoronaContext(_configuration))
             {
-                return db.Locations.Where(l => l.City.Contains(city)).ToList();
+                if ( city != null && city.Length > 0 && city != " ")
+                    return db.Locations.Where(l => l.City.Contains(city)).ToList();
+                else
+                    return db.Locations.ToList();
             }
         }
         public async Task<ICollection<Location>> GetByDatesRangeAsync(Models.LocationSearch locationSearch)
@@ -61,23 +68,28 @@ namespace CoronaApp.Services.Functions
             ICollection<Location> l2 = await GetByAgeAsync((int)locationSearch?.Age);
             return l1.Intersect(l2).ToList(); 
         }
-        public async Task PostAsync(Location location)
+        public async Task PostAsync(LocationDto location, ClaimsPrincipal user)
         {
-            if (location == null || location.Patient == null || location.Patient.Id == null)
+            string id = user.Claims.FirstOrDefault(x => x.Type.ToString().Equals("UserId", StringComparison.InvariantCultureIgnoreCase)).Value;
+
+            if (location == null || id == null)
                 throw new InvalidOperationException();
+
 
             await using (var db = new CoronaContext(_configuration))
             {
-                Patient Exitpatient = db.Patients.FirstOrDefault(p => p.Id == location.Patient.Id);
+                Patient Exitpatient = db.Patients.FirstOrDefault(p => p.Id == id);
+                Location locationToPost = location.ToDal(Exitpatient);
+
                 if (Exitpatient == null)
                 {
-                    await db.Locations.AddAsync(location); //If the patient does'nt exist, he'll be created automatically by this line.
+                    await db.Locations.AddAsync(locationToPost); //If the patient does'nt exist, he'll be created automatically by this line.
                 }
                 else
                 {
                     if (Exitpatient.Locations == null)
                         Exitpatient.Locations = new List<Location>();
-                    Exitpatient.Locations.Add(location);
+                    Exitpatient.Locations.Add(locationToPost);
                 }
 
                 await db.SaveChangesAsync();
